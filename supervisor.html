@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="es"><head><title>Nexora — Supervisores</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><style>:root{--wine:#3D1F2E;--wine-2:#5A2C42;--gold:#D9A441;--paper:#FAF6EE;--ink:#241C1F;--ink-soft:#6B5F5B;--line:rgba(36,28,31,.12);--card:#fff;--warn:#B5542A;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#1B1516;--card:#241D1F;--ink:#F4ECE6;--ink-soft:#B9ACA5;--line:rgba(244,236,230,.14)}}
+:root[data-theme="dark"]{--paper:#1B1516;--card:#241D1F;--ink:#F4ECE6;--ink-soft:#B9ACA5;--line:rgba(244,236,230,.14)}
+*{box-sizing:border-box}html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--paper);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif}button{font-family:inherit;cursor:pointer}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 20px;background:var(--paper);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces';font-weight:600;font-size:19px}
+.mark{width:30px;height:30px;border-radius:8px;background:var(--wine);color:#F0D9A3;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.page{max-width:1180px;margin:0 auto;padding:26px 20px 80px}
+.btn{background:var(--wine);color:#fff;border:none;padding:11px 18px;border-radius:10px;font-weight:600;font-size:14px}
+.btn.ghost{background:none;color:var(--ink-soft);border:1px solid var(--line);padding:8px 14px;font-size:13px}
+input,select{width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px;margin-top:4px;font-family:inherit}
+label{display:block;margin-bottom:10px;font-size:13.5px}
+.gate{max-width:360px;margin:60px auto;text-align:center}.gate input{margin:14px 0 10px}.gate .btn{width:100%}
+.err{color:var(--warn);font-size:13px;margin-top:8px;min-height:18px}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}@media(min-width:760px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}.kpi b{display:block;font-family:'Fraunces';font-size:26px;font-weight:600}.kpi span{font-size:12.5px;color:var(--ink-soft)}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:22px;overflow-x:auto}
+.tabs button{background:none;border:none;padding:10px 4px;margin-right:18px;font-size:14px;font-weight:600;color:var(--ink-soft);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.active{color:var(--wine);border-color:var(--wine)}@media(prefers-color-scheme:dark){.tabs button.active{color:var(--gold);border-color:var(--gold)}}
+.panel{display:none}.panel.active{display:block}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:22px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px}th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--ink-soft);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}tr:last-child td{border-bottom:none}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;color:#fff}
+h3.sec{margin:0 0 10px;font-size:16px}
+.chart-grid{display:grid;grid-template-columns:1fr;gap:18px}@media(min-width:860px){.chart-grid{grid-template-columns:1fr 1fr}}
+.chart-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}.chart-card h3{margin:0 0 4px;font-size:15px}.chart-card p{margin:0 0 12px;font-size:12.5px;color:var(--ink-soft)}.chart-card canvas{max-height:260px}
+.empty{padding:22px;color:var(--ink-soft);font-size:14px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+</style></head><body><div class="topbar"><div class="brand"><div class="mark">N</div>Nexora · Supervisores</div><button class="btn ghost" id="logout" style="display:none" onclick="logout()">Salir</button></div>
+<div class="page">
+  <div id="gate" class="gate"><h2>Acceso de supervisores</h2><p style="color:var(--ink-soft);font-size:13.5px">Panel exclusivo del equipo de Nexora.</p>
+    <input id="g-code" type="password" placeholder="Código de supervisor" onkeydown="if(event.key==='Enter')login()"><button class="btn" onclick="login()">Entrar</button><div id="g-err" class="err"></div></div>
+  <div id="app" style="display:none">
+    <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+      <div><h2 style="margin:0 0 4px">Panel de supervisores</h2><p style="margin:0;color:var(--ink-soft);font-size:13.5px">Datos de todos los negocios con acceso a Nexora.</p></div>
+      <label style="margin:0;min-width:240px">Negocio<select id="neg-select" onchange="loadDash(this.value||null)"></select></label></div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+<div class="tabs" id="tabs">
+  <button data-tab="clientes" class="active">Clientes</button>
+  <button data-tab="graficas">Gráficas</button>
+  <button data-tab="negocios">Negocios</button>
+</div>
+<div id="dash-msg" class="empty" style="display:none"></div>
+<div id="tab-clientes" class="panel active">
+  <h3 class="sec">Clientes (los más recientes primero)</h3>
+  <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Edad</th><th>Sexo</th><th>Visitas</th><th>Visitas (30 días)</th><th>Consumo total</th><th>Última visita</th><th>Clasificación</th></tr></thead><tbody id="clients-tbody"></tbody></table></div>
+  <h3 class="sec">Visitas recientes</h3>
+  <div class="table-wrap"><table style="min-width:520px"><thead><tr><th>Fecha</th><th>Cliente</th><th>Producto</th><th>Consumo</th></tr></thead><tbody id="recent-tbody"></tbody></table></div>
+</div>
+<div id="tab-graficas" class="panel">
+  <div class="chart-grid">
+    <div class="chart-card"><h3>Número de visitas por cliente</h3><p>Top 10 por visitas registradas.</p><canvas id="chVisits"></canvas></div>
+    <div class="chart-card"><h3>Cada cuánto vuelven</h3><p>Clientes según el promedio de días entre sus visitas.</p><canvas id="chInterval"></canvas></div>
+    <div class="chart-card"><h3>Consumo semanal</h3><p>Total consumido por semana (últimas 8).</p><canvas id="chWeek"></canvas></div>
+    <div class="chart-card"><h3>Consumo mensual</h3><p>Total consumido por mes (últimos 6).</p><canvas id="chMonth"></canvas></div>
+    <div class="chart-card"><h3>Productos más consumidos</h3><p>Productos registrados en las visitas.</p><canvas id="chProducts"></canvas></div>
+    <div class="chart-card"><h3>Género de los clientes</h3><p>Distribución según el registro.</p><canvas id="chGender"></canvas></div>
+    <div class="chart-card"><h3>Clasificación de clientes</h3><p>Ocasional 1–3, Frecuente 4–8, VIP 9+ visitas en 30 días.</p><canvas id="chTier"></canvas></div>
+  </div>
+</div>
+
+    <div id="tab-negocios" class="panel">
+      <h3 class="sec">Agregar negocio</h3>
+      <div class="box" style="max-width:420px;margin-bottom:24px">
+        <label>Nombre del negocio<input id="n-nombre" type="text"></label>
+        <label>Código de acceso (lo usará el negocio para entrar)<input id="n-codigo" type="text"></label>
+        <button class="btn" onclick="addNegocio()">Agregar</button><div id="n-err" class="err"></div></div>
+      <h3 class="sec">Negocios registrados</h3><div id="neg-list" class="chart-grid"></div>
+    </div>
+  </div>
+</div>
+<script>const SUPABASE_URL='https://jqcksmucqntgirjuatgf.supabase.co';
+const SUPABASE_KEY='sb_publishable_p1aK3HqeyC6FhwqozPlR2w_RUmN7DAQ';
+let supa=null;
+// La vista previa de Claude no puede clonar objetos Headers: los convertimos a un objeto simple.
+const safeFetch=(url,opts={})=>{const h={};if(opts.headers){new Headers(opts.headers).forEach((v,k)=>{h[k]=v;});}return fetch(typeof url==='string'?url:String(url),Object.assign({},opts,{headers:h}));};
+try{supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{global:{fetch:safeFetch}});}catch(e){}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function showTab(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+name));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  if(name==='graficas'&&window.renderCharts)setTimeout(renderCharts,30);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('#tabs button');if(b)showTab(b.dataset.tab);});
+
+const DAY=864e5;
+const TIER_COLOR={Ocasional:'#8C8378',Frecuente:'#5A2C42',VIP:'#D9A441',Inactivo:'#C9C2BA'};
+let D={clientes:[],logs:[]},charts=[],CURRENT_NEG=null;
+const classify=n=>n>=9?'VIP':n>=4?'Frecuente':n>=1?'Ocasional':'Inactivo';
+const fmt$=n=>'$'+Math.round(n).toLocaleString('es-MX');
+const fmtDate=d=>d?new Date(d).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}):'—';
+function dashMsg(t){const m=document.getElementById('dash-msg');m.style.display=t?'block':'none';m.textContent=t||'';}
+
+async function loadDash(negocioId){
+  CURRENT_NEG=negocioId||null;
+  if(!supa){dashMsg('No se pudo conectar con la base de datos.');return;}
+  let qc=supa.from('clientes').select('*'),ql=supa.from('visitas_log').select('*');
+  if(CURRENT_NEG){qc=qc.eq('negocio_id',CURRENT_NEG);ql=ql.eq('negocio_id',CURRENT_NEG);}
+  const [c,l]=await Promise.all([qc,ql]);
+  if(c.error||l.error){dashMsg('Error al leer datos: '+(c.error||l.error).message);return;}
+  D.clientes=c.data||[];D.logs=l.data||[];
+  dashMsg(D.clientes.length?'':'Todavía no hay clientes registrados.');
+  renderDash();
+  if(document.getElementById('tab-graficas').classList.contains('active'))renderCharts();
+}
+
+function monthCounts(){
+  const since=Date.now()-30*DAY,m={};
+  D.logs.forEach(l=>{if(new Date(l.fecha).getTime()>=since)m[l.cliente_id]=(m[l.cliente_id]||0)+1;});
+  return m;
+}
+function renderDash(){
+  const mc=monthCounts(),c=D.clientes;
+  const totalV=D.logs.length,totalS=D.logs.reduce((s,l)=>s+Number(l.consumo||0),0);
+  const vip=c.filter(x=>classify(mc[x.id]||0)==='VIP').length;
+  document.getElementById('kpi-grid').innerHTML=
+   `<div class="kpi"><b>${c.length}</b><span>clientes registrados</span></div>
+    <div class="kpi"><b>${totalV}</b><span>visitas totales</span></div>
+    <div class="kpi"><b>${fmt$(totalV?totalS/totalV:0)}</b><span>consumo promedio por visita</span></div>
+    <div class="kpi"><b>${vip}</b><span>clientes VIP (30 días)</span></div>`;
+  const sorted=c.slice().sort((a,b)=>new Date(b.ultima_visita||0)-new Date(a.ultima_visita||0));
+  document.getElementById('clients-tbody').innerHTML=sorted.map(x=>{
+    const n=mc[x.id]||0,t=classify(n);
+    return `<tr><td>${esc(x.nombre||'—')}</td><td>${esc(x.telefono||'—')}</td><td>${esc(x.edad??'—')}</td><td>${esc(x.sexo||'—')}</td><td>${x.visitas||0}</td><td>${n}</td><td>${x.consumo_total?fmt$(x.consumo_total):'—'}</td><td>${fmtDate(x.ultima_visita)}</td><td><span class="chip" style="background:${TIER_COLOR[t]}">${t}</span></td></tr>`;
+  }).join('')||'<tr><td colspan="9" class="empty">Sin clientes todavía.</td></tr>';
+  const byId={};c.forEach(x=>byId[x.id]=x);
+  document.getElementById('recent-tbody').innerHTML=D.logs.slice().sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)).slice(0,12).map(l=>
+    `<tr><td>${fmtDate(l.fecha)}</td><td>${esc(byId[l.cliente_id]?.nombre||l.cliente_id)}</td><td>${esc(l.producto||'—')}</td><td>${l.consumo?fmt$(l.consumo):'—'}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Sin visitas todavía.</td></tr>';
+}
+
+function weekStart(d){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
+function renderCharts(){
+  charts.forEach(c=>c.destroy());charts=[];
+  if(!D.clientes.length)return;
+  const wine='#5A2C42',gold='#D9A441',mk=(id,type,labels,data,color,opt)=>{
+    charts.push(new Chart(document.getElementById(id),{type,data:{labels:labels.length?labels:['Sin datos'],datasets:[{data:data.length?data:[0],backgroundColor:color,borderColor:type==='line'?gold:undefined,borderRadius:type==='bar'?6:0,fill:type==='line',tension:.35}]},
+      options:Object.assign({plugins:{legend:{display:type==='doughnut'}},scales:type==='doughnut'?{}:{y:{beginAtZero:true,ticks:{precision:0}}}},opt||{})}));};
+  const mc=monthCounts(),top=D.clientes.slice().sort((a,b)=>(b.visitas||0)-(a.visitas||0)).slice(0,10);
+  mk('chVisits','bar',top.map(x=>x.nombre||x.id),top.map(x=>x.visitas||0),wine);
+  // intervalo promedio entre visitas por cliente
+  const per={};D.logs.forEach(l=>(per[l.cliente_id]=per[l.cliente_id]||[]).push(new Date(l.fecha).getTime()));
+  const bk={'≤3 días':0,'4–7 días':0,'8–14 días':0,'15–30 días':0,'+30 días':0};
+  Object.values(per).forEach(a=>{if(a.length<2)return;a.sort((x,y)=>x-y);const g=(a[a.length-1]-a[0])/(a.length-1)/DAY;
+    bk[g<=3?'≤3 días':g<=7?'4–7 días':g<=14?'8–14 días':g<=30?'15–30 días':'+30 días']++;});
+  mk('chInterval','bar',Object.keys(bk),Object.values(bk),gold);
+  // consumo semanal (8 semanas)
+  const w0=weekStart(new Date()),weeks=[...Array(8)].map((_,i)=>new Date(w0.getTime()-(7-i)*7*DAY));
+  const ws=weeks.map(()=>0);
+  D.logs.forEach(l=>{const t=weekStart(l.fecha).getTime(),i=weeks.findIndex(w=>w.getTime()===t);if(i>=0)ws[i]+=Number(l.consumo||0);});
+  mk('chWeek','bar',weeks.map(w=>w.toLocaleDateString('es-MX',{day:'2-digit',month:'short'})),ws,wine);
+  // consumo mensual (6 meses)
+  const now=new Date(),ms=[...Array(6)].map((_,i)=>new Date(now.getFullYear(),now.getMonth()-5+i,1)),mv=ms.map(()=>0);
+  D.logs.forEach(l=>{const d=new Date(l.fecha),i=ms.findIndex(m=>m.getFullYear()===d.getFullYear()&&m.getMonth()===d.getMonth());if(i>=0)mv[i]+=Number(l.consumo||0);});
+  mk('chMonth','bar',ms.map(m=>m.toLocaleDateString('es-MX',{month:'short'})),mv,gold);
+  // productos
+  const pr={};D.logs.forEach(l=>{if(l.producto){const k=l.producto.trim();pr[k]=(pr[k]||0)+1;}});
+  const pe=Object.entries(pr).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  mk('chProducts','bar',pe.map(e=>e[0]),pe.map(e=>e[1]),wine,{indexAxis:'y',scales:{x:{beginAtZero:true,ticks:{precision:0}}}});
+  // género
+  const g={};D.clientes.forEach(x=>{const k=x.sexo||'Sin dato';g[k]=(g[k]||0)+1;});
+  mk('chGender','doughnut',Object.keys(g),Object.values(g),['#5A2C42','#D9A441','#8C8378','#4C7A5B','#C9C2BA']);
+  // clasificación
+  const t={Ocasional:0,Frecuente:0,VIP:0,Inactivo:0};D.clientes.forEach(x=>t[classify(mc[x.id]||0)]++);
+  mk('chTier','doughnut',Object.keys(t),Object.values(t),Object.keys(t).map(k=>TIER_COLOR[k]));
+}
+
+// Códigos de acceso de los supervisores (cámbialos por los que quieran usar)
+const SUPERVISOR_CODES={'sergio-nexora':'Sergio','admin-nexora':'Administrador'};
+const CLIENTE_URL='https://claude.ai/artifact/7wSzNAFA4WQ9kZVCEcBPaB';
+let NEGOCIOS=[];
+const $=id=>document.getElementById(id);
+function login(){
+  const code=$('g-code').value.trim();
+  if(!SUPERVISOR_CODES[code]){$('g-err').textContent='Código incorrecto.';return;}
+  try{sessionStorage.setItem('nexora_sup','1');}catch(e){}enter();
+}
+function logout(){try{sessionStorage.removeItem('nexora_sup');}catch(e){}location.reload();}
+function enter(){$('gate').style.display='none';$('app').style.display='block';$('logout').style.display='inline-block';loadNegocios();}
+try{if(sessionStorage.getItem('nexora_sup')&&supa)enter();}catch(e){}
+
+async function loadNegocios(){
+  const {data,error}=await supa.from('negocios').select('*').order('nombre');
+  if(error){dashMsg('Error: '+error.message);return;}
+  NEGOCIOS=data||[];
+  const cur=$('neg-select').value;
+  $('neg-select').innerHTML='<option value="">Todos los negocios</option>'+NEGOCIOS.map(n=>`<option value="${esc(n.id)}">${esc(n.nombre)}</option>`).join('');
+  $('neg-select').value=cur;
+  renderNegocios();loadDash(cur||null);
+}
+function renderNegocios(){
+  $('neg-list').innerHTML=NEGOCIOS.map(n=>{
+    const url=CLIENTE_URL+'?n='+encodeURIComponent(n.id);
+    return `<div class="chart-card"><h3>${esc(n.nombre)}</h3><p>Código de acceso del negocio: <b>${esc(n.codigo_acceso)}</b></p>
+      <p style="word-break:break-all">Enlace para clientes: <a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a></p><div class="qr-holder" data-url="${esc(url)}"></div></div>`;
+  }).join('')||'<div class="empty">Todavía no hay negocios.</div>';
+  document.querySelectorAll('.qr-holder').forEach(h=>new QRCode(h,{text:h.dataset.url,width:110,height:110}));
+}
+async function addNegocio(){
+  const nombre=$('n-nombre').value.trim(),codigo=$('n-codigo').value.trim();
+  if(!nombre||!codigo){$('n-err').textContent='Llena nombre y código.';return;}
+  const id=nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const {error}=await supa.from('negocios').insert({id,nombre,codigo_acceso:codigo});
+  if(error){$('n-err').textContent='No se pudo agregar: '+error.message;return;}
+  $('n-err').textContent='';$('n-nombre').value='';$('n-codigo').value='';loadNegocios();
+}
+</script></body></html>
