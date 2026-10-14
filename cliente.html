@@ -1,0 +1,185 @@
+<!DOCTYPE html><html lang="es"><head><title>Nexora — Mi tarjeta</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><style>:root{--bg:#0A0F24;--card:#111A3A;--line:rgba(130,140,255,.16);--ink:#EEF1FF;--ink-soft:#97A3CC;--gold:#F5B544;--warn:#F87171;--wine:#3B33B8;--paper:#0A0F24;color-scheme:dark}
+*{box-sizing:border-box}html{height:100%}
+body{margin:0;min-height:100%;padding-top:env(safe-area-inset-top,0px);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;
+ background:radial-gradient(1000px 520px at 85% -10%,rgba(108,99,245,.22),transparent 60%),radial-gradient(800px 500px at -10% 110%,rgba(16,185,129,.08),transparent 60%),var(--bg);background-attachment:fixed}
+h1,h2,h3{font-family:'Inter',sans-serif;margin:0}button{font-family:inherit;cursor:pointer}
+.i{width:20px;height:20px;flex:none}
+.grad{background:linear-gradient(90deg,#8B7CFF,#C084FC);-webkit-background-clip:text;background-clip:text;color:transparent}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 20px;background:rgba(10,15,36,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-.01em}
+.mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#6C63F5,#8B5CF6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 8px 20px -8px rgba(108,99,245,.9);flex:none}
+.page{max-width:1180px;margin:0 auto;padding:26px 20px 80px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:linear-gradient(135deg,#5B5BF0,#7C5CF6);color:#fff;border:none;padding:12px 20px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 10px 24px -12px rgba(108,99,245,.9)}
+.btn .i{width:18px;height:18px}
+.btn.ghost{background:rgba(255,255,255,.04);color:var(--ink-soft);border:1px solid var(--line);box-shadow:none;padding:9px 16px;font-size:13px}
+input,select{width:100%;padding:11px 12px;border-radius:11px;border:1px solid var(--line);background:#0D1634;color:var(--ink);font-size:15px;margin-top:5px;font-family:inherit}
+input:focus,select:focus{outline:2px solid rgba(139,124,255,.55)}
+label{display:block;margin-bottom:12px;font-size:13.5px;color:var(--ink-soft);font-weight:500}
+.err{color:var(--warn);font-size:13px;margin-top:8px;min-height:18px}
+.empty{padding:22px;color:var(--ink-soft);font-size:14px}
+.card,.box,.chart-card,.kpi{background:linear-gradient(180deg,#121C3F,#0F1736);border:1px solid var(--line);border-radius:18px}
+.card.pad,.box{padding:20px 22px}.chart-card{padding:20px}
+.ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c,#6C63F5) 22%,transparent);color:var(--c,#8B7CFF);flex:none}
+.ch-head{display:flex;gap:12px;align-items:center;margin-bottom:16px}.ch-head h3{font-size:15.5px;font-weight:700}.ch-head p{margin:2px 0 0;font-size:12.5px;color:var(--ink-soft)}
+.gate-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.gate{width:100%;max-width:390px;text-align:center;padding:34px 30px}
+.gate .mark{margin:0 auto 16px;width:48px;height:48px;font-size:22px;border-radius:15px}.gate h2{font-size:22px;font-weight:800}.gate p{color:var(--ink-soft);font-size:13.5px;margin:8px 0 6px}
+.gate input{margin:12px 0}.gate .btn{width:100%}
+.shell{display:flex;min-height:100vh}
+.side{width:236px;flex:none;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:22px 14px;background:linear-gradient(180deg,#0D1434,#0A1029);border-right:1px solid var(--line)}
+.brand-block{display:flex;align-items:center;gap:12px;padding:4px 8px}.brand-block b{display:block;font-size:18px;font-weight:800}.brand-block small{display:block;color:var(--ink-soft);font-size:12px;margin-top:1px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tabs{display:flex;flex-direction:column;gap:5px;margin-top:28px}
+#tabs button,.logout{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:13px;background:none;border:none;color:var(--ink-soft);font-weight:600;font-size:14px;text-align:left}
+#tabs button:hover,.logout:hover{background:rgba(255,255,255,.05);color:var(--ink)}
+#tabs button.active{color:#fff;background:linear-gradient(135deg,rgba(108,99,245,.45),rgba(139,92,246,.28));box-shadow:inset 0 0 0 1px rgba(139,124,255,.45),0 10px 24px -14px rgba(108,99,245,.9)}
+.logout{margin-top:auto}
+.main{flex:1;min-width:0;max-width:1320px;padding:30px 34px 70px}
+.welcome{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:26px}
+.welcome h1{font-size:clamp(26px,3.4vw,36px);font-weight:800;line-height:1.15;letter-spacing:-.02em}.welcome p{margin:8px 0 0;color:var(--ink-soft);font-size:14px}
+.welcome label{margin:0;min-width:250px}
+.panel{display:none}.panel.active{display:block}
+.view-title{margin-bottom:18px}.view-title h2{font-size:22px;font-weight:800}.view-title p{margin:4px 0 0;color:var(--ink-soft);font-size:13.5px}
+@media(max-width:899px){
+ .shell{display:block}
+ .side{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;height:auto;flex-direction:row;align-items:stretch;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:30;border-right:none;border-top:1px solid var(--line);background:rgba(10,16,41,.96);backdrop-filter:blur(12px)}
+ .brand-block{display:none}
+ #tabs{flex-direction:row;flex:1;margin:0;gap:2px;justify-content:space-around}
+ #tabs button,.logout{flex-direction:column;gap:3px;padding:8px 10px;font-size:11px;text-align:center;flex:1;justify-content:center}
+ .logout{margin:0;flex:none;min-width:58px}
+ .main{padding:22px 16px 110px}
+}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:22px}@media(min-width:900px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.kpi{display:flex;align-items:center;gap:14px;padding:18px;border-color:color-mix(in srgb,var(--c) 38%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 20%,#101839),#0F1736 75%)}
+.kpi .ic{width:50px;height:50px;border-radius:15px;background:var(--c);color:#fff;box-shadow:0 10px 22px -10px var(--c)}.kpi .ic .i{width:24px;height:24px}
+.kpi b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.1}.kpi span{font-size:12.5px;color:var(--ink-soft)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--ink-soft);font-weight:600;font-size:12.5px;background:rgba(255,255,255,.025)}
+tbody tr:hover{background:rgba(108,99,245,.08)}tr:last-child td{border-bottom:none}
+.av{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;margin-right:10px;font-size:12px;font-weight:700;color:#fff;vertical-align:middle}
+.chip{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600}
+.chip.blue{background:rgba(59,130,246,.2);color:#8DB8FF}.chip.violet{background:rgba(139,92,246,.22);color:#C4A8FF}.chip.gold{background:rgba(245,181,68,.2);color:#FFD27A}.chip.gray{background:rgba(151,163,204,.16);color:#AEB8DA}
+.chart-grid{display:grid;grid-template-columns:1fr;gap:18px}@media(min-width:900px){.chart-grid{grid-template-columns:1fr 1fr}}
+.chart-card canvas{max-height:250px}
+.hero-scan{display:flex;gap:24px;align-items:center;justify-content:space-between;padding:26px;overflow:hidden}
+.hero-scan h2{font-size:24px;font-weight:800}.hero-scan p{color:var(--ink-soft);margin:6px 0 16px;font-size:14px}
+.hero-scan .ic.big{width:60px;height:60px;border-radius:18px;margin-bottom:16px;--c:#7C6CF6}.hero-scan .ic.big .i{width:30px;height:30px}
+.hero-art{display:none}@media(min-width:760px){.hero-art{display:block;flex:none;opacity:.9}}
+.stamp-card{border-radius:24px;overflow:hidden;background:linear-gradient(160deg,#3B33B8,#5B3FD1 60%,#3B33B8);box-shadow:0 24px 50px -20px rgba(91,63,209,.75);color:#EEF0FF;border:1px solid rgba(255,255,255,.12)}
+.sc-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px}.brand2{display:flex;align-items:center;gap:10px}
+.mark2{width:32px;height:32px;border-radius:10px;background:var(--gold);color:#2A2480;display:flex;align-items:center;justify-content:center;font-weight:800}.name2{font-weight:800;font-size:18px}
+.sc-photo{position:relative;height:164px;overflow:hidden;background:radial-gradient(circle at 25% 15%,rgba(232,205,186,.55),transparent 55%),linear-gradient(135deg,#7C5B32,#B98247 45%,#E7B463)}
+.leaf{position:absolute;opacity:.5}
+.stamp-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr);align-content:center;justify-items:center;gap:10px 0;padding:0 12px}
+.stamp{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.12)}.stamp.filled{background:rgba(255,255,255,.95)}
+.stamp svg{width:18px;height:18px;stroke:#D8CFC5;fill:none;stroke-width:1.8}.stamp.filled svg{stroke:#3B33B8}.stamp.reward svg{fill:#D8CFC5;stroke:none}.stamp.reward.filled svg{fill:var(--gold);stroke:none}
+.sc-body{padding:18px 20px 4px}.sc-count{font-size:36px;font-weight:800;letter-spacing:-.02em}
+.sc-qr{margin:16px 18px 0;background:#EEF0FF;border-radius:12px;padding:12px;display:flex;justify-content:center}.sc-code{text-align:center;padding:8px 0 18px;font-size:11px;letter-spacing:.08em;color:#C7CCF5}
+.wallet-buttons{display:flex;flex-direction:column;gap:10px;margin-top:20px}.wbtn{padding:14px 16px;border-radius:999px;border:1px solid var(--line);font-size:14.5px;font-weight:700}.wbtn.apple{background:#000;color:#fff;border-color:#333}.wbtn.google{background:#161F44;color:var(--ink)}
+.modal-bg{position:fixed;inset:0;background:rgba(5,8,22,.7);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal-bg.open{display:flex}.modal{background:#121C3F;border-radius:18px;padding:24px;max-width:420px;width:100%;border:1px solid var(--line)}
+</style></head><body><div class="topbar"><div class="brand"><div class="mark">N</div>Nexora</div></div>
+<div class="page" style="max-width:440px">
+  <div style="text-align:center;margin-bottom:18px"><h1 id="t-title" style="font-size:25px;margin:0 0 6px">Tu tarjeta de lealtad</h1><p id="t-sub" style="margin:0;color:var(--ink-soft);font-size:13.5px"></p></div>
+  <div id="status" class="empty" style="text-align:center">Cargando…</div>
+
+  <div id="register" style="display:none" class="box"><h3 style="margin:0 0 12px">Regístrate para obtener tu tarjeta</h3>
+    <label>Nombre<input id="r-nombre" type="text" autocomplete="name"></label>
+    <label>Número telefónico<input id="r-tel" type="tel" autocomplete="tel"></label>
+    <label>Edad<input id="r-edad" type="number" min="1" max="120"></label>
+    <label>Sexo<select id="r-sexo"><option value="">Selecciona</option><option>Mujer</option><option>Hombre</option><option>Otro</option><option>Prefiero no decir</option></select></label>
+    <button class="btn" style="width:100%" onclick="submitReg()">Crear mi tarjeta</button><div id="r-err" class="err"></div></div>
+
+  <div id="card" style="display:none">
+    <div class="stamp-card">
+      <div class="sc-header"><div class="brand2"><div class="mark2" id="c-ini">N</div><div class="name2" id="c-name">Nexora</div></div><div style="opacity:.65;letter-spacing:2px">•••</div></div>
+      <div class="sc-photo"><svg class="leaf" viewBox="0 0 100 100" width="120" style="left:-10px;top:60px"><path d="M50 5C20 20 10 55 30 85 55 70 70 35 50 5Z" fill="#4C7A5B"/></svg><svg class="leaf" viewBox="0 0 100 100" width="90" style="right:-16px;top:-14px"><path d="M50 5C20 20 10 55 30 85 55 70 70 35 50 5Z" fill="#4C7A5B"/></svg><div class="stamp-grid" id="stamp-grid"></div></div>
+      <div class="sc-body"><div style="font-size:12.5px;color:#E8CDBA">Sellos</div><div class="sc-count" id="sc-count">0</div></div>
+      <div class="sc-qr"><div id="sc-qr"></div></div><div class="sc-code" id="sc-code"></div>
+    </div>
+    <div class="wallet-buttons">
+      <button class="wbtn apple" onclick="openModal('apple')">Añadir a Apple Wallet</button>
+      <button class="wbtn google" onclick="openModal('google')">Añadir a Google Wallet</button>
+    </div>
+    <div class="box" style="margin-top:20px"><h3 id="p-title" style="margin:0 0 6px;font-size:15px"></h3><p id="p-text" style="margin:0 0 14px;font-size:13.5px;color:var(--ink-soft)"></p>
+      <h3 style="margin:0 0 6px;font-size:15px">Cómo ganar sellos</h3><ul style="margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-soft);line-height:1.7"><li>Visita el restaurante y pide tu platillo favorito.</li><li>Muestra tu código QR al pagar.</li><li>Cada visita suma un sello; cada 5 sellos, una recompensa.</li></ul></div>
+  </div>
+</div>
+<div class="modal-bg" id="modal"><div class="modal"><h3 style="margin:0 0 10px">¿Cómo funciona tu tarjeta?</h3><p id="m-text" style="font-size:14px;color:var(--ink-soft);line-height:1.55;margin:0 0 16px"></p><button class="btn" style="width:100%" onclick="document.getElementById('modal').classList.remove('open')">Entendido</button></div></div>
+<script>const SUPABASE_URL='https://jqcksmucqntgirjuatgf.supabase.co';
+const SUPABASE_KEY='sb_publishable_p1aK3HqeyC6FhwqozPlR2w_RUmN7DAQ';
+let supa=null;
+// La vista previa de Claude no puede clonar objetos Headers: los convertimos a un objeto simple.
+const safeFetch=(url,opts={})=>{const h={};if(opts.headers){new Headers(opts.headers).forEach((v,k)=>{h[k]=v;});}return fetch(typeof url==='string'?url:String(url),Object.assign({},opts,{headers:h}));};
+try{supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{global:{fetch:safeFetch}});}catch(e){}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function showTab(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+name));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  if(name==='graficas'&&window.renderCharts)setTimeout(renderCharts,30);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('#tabs button');if(b)showTab(b.dataset.tab);});
+
+
+const FORK='<svg viewBox="0 0 24 24"><path d="M6 2v8M9 2v8M6 10c0 2-1.5 2-1.5 4v8M9 10c0-2 1.5-2 1.5-4V2M17 2v20M20 2c0 4-3 5-3 9v11" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const GIFT='<svg viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="11" rx="1"/><path d="M3 9h18M12 9v11M12 9C9 9 7 7.5 7 5.5A2.5 2.5 0 0 1 9.5 3C11.5 3 12 6 12 9ZM12 9c3 0 5-1.5 5-3.5A2.5 2.5 0 0 0 14.5 3C12.5 3 12 6 12 9Z"/></svg>';
+let NEG=null,CARD=null,CARD_ID=null;
+const $=id=>document.getElementById(id);
+const status=t=>{$('status').style.display=t?'block':'none';$('status').textContent=t||'';};
+
+function renderStamps(total){
+  let f=total%10;if(f===0&&total>0)f=10;let h='';
+  for(let i=1;i<=10;i++){const r=i%5===0;h+=`<div class="stamp ${i<=f?'filled':''} ${r?'reward':''}">${r?GIFT:FORK}</div>`;}
+  $('stamp-grid').innerHTML=h;$('sc-count').textContent=total;
+  const left=10-f;
+  $('p-title').textContent=f===10?'¡Recompensa lista!':'Sellos para tu próxima recompensa';
+  $('p-text').textContent=f===10?'Muestra tu tarjeta en tu próxima visita para reclamarla.':`${left} sello${left===1?'':'s'} más para tu siguiente recompensa.`;
+}
+function openModal(k){
+  $('m-text').textContent=k==='apple'?'Al agregar tu tarjeta a Apple Wallet, queda guardada en tu teléfono. Cada vez que visites el restaurante y muestres tu código, tus sellos se actualizan solos. Si activas la ubicación, también te avisamos en la pantalla de bloqueo cuando estés cerca.':'Al agregar tu tarjeta a Google Wallet, queda guardada en tu teléfono. Cada vez que visites el restaurante y muestres tu código, tus sellos se actualizan solos, sin instalar ninguna app.';
+  $('modal').classList.add('open');
+}
+function deviceId(negId){
+  const k='nexora_id_'+negId;let id=null;
+  try{id=localStorage.getItem(k);}catch(e){}
+  if(!id){id=negId+'-'+Math.random().toString(36).slice(2,8).toUpperCase();try{localStorage.setItem(k,id);}catch(e){}}
+  return id;
+}
+function showCard(c){
+  CARD=c;$('register').style.display='none';status('');
+  $('card').style.display='block';$('t-sub').textContent='Guárdala en Wallet y suma un sello cada vez que nos visitas.';
+  $('c-name').textContent=NEG.nombre;$('c-ini').textContent=NEG.nombre.trim().charAt(0).toUpperCase();$('sc-code').textContent=c.id;
+  renderStamps(c.sellos||0);$('sc-qr').innerHTML='';
+  new QRCode($('sc-qr'),{text:c.id,width:120,height:120,colorDark:'#1E1B4B',colorLight:'#EEF0FF'});
+}
+async function start(){
+  try{
+    if(!supa)throw new Error('No se pudo cargar la conexión a la base de datos.');
+    const n=new URLSearchParams(location.search).get('n');
+    if(!n){status('Escanea el código QR de tu restaurante para obtener tu tarjeta.');return;}
+    await loadNegocio(n);
+  }catch(e){status('Error: '+(e.message||e));console.error(e);}
+}
+async function loadNegocio(n){
+  const {data:neg,error}=await supa.from('negocios').select('id,nombre').eq('id',n).maybeSingle();
+  if(error)throw error;
+  if(!neg){status('No encontramos ese restaurante. Escanea de nuevo el QR de tu mesa.');return;}
+  NEG=neg;CARD_ID=deviceId(neg.id);
+  const {data:c,error:e2}=await supa.from('clientes').select('*').eq('id',CARD_ID).maybeSingle();
+  if(e2)throw e2;
+  if(c){showCard(c);}else{status('');$('t-sub').textContent='Bienvenido a '+neg.nombre;$('register').style.display='block';}
+}
+async function submitReg(){
+  const nombre=$('r-nombre').value.trim(),telefono=$('r-tel').value.trim(),edad=parseInt($('r-edad').value,10),sexo=$('r-sexo').value;
+  if(!nombre||!telefono||!edad||!sexo){$('r-err').textContent='Por favor llena los 4 campos.';return;}
+  $('r-err').textContent='';
+  const {data,error}=await supa.from('clientes').insert({id:CARD_ID,negocio_id:NEG.id,nombre,telefono,edad,sexo,sellos:0}).select().single();
+  if(error){$('r-err').textContent='No se pudo crear tu tarjeta: '+error.message;return;}
+  showCard(data);
+}
+start();
+</script></body></html>
